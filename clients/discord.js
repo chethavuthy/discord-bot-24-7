@@ -1,7 +1,12 @@
 const { Client, Intents } = require("discord.js");
 const moment = require("moment");
 const { discord, telegram } = require("../configs");
-const { getRandomEmoji, getChannelNameById, getDiff } = require("../utils");
+const {
+  getRandomEmoji,
+  getChannelNameById,
+  getDiff,
+  sendMsgAndLog,
+} = require("../utils");
 const { bot } = require("./telegram");
 
 const joined = new Map();
@@ -19,31 +24,30 @@ async function initDiscord() {
     if (oldState.member.user.bot) return;
 
     const { username } = oldState.member.user || {};
-    const memberId = oldState.member.id;
+    const { id: memberId } = oldState.member || {};
 
     const oldChannelName = getChannelNameById(client, oldState.channelId);
     const newChannelName = getChannelNameById(client, newState.channelId);
 
-    let message = `${username} `;
-
     if (!newState.channelId) {
       const diff = getDiff(joined, memberId);
+      const message = `${username} left ${oldChannelName} (${diff})`;
 
-      message += `left ${oldChannelName} (${diff})`;
+      sendMsgAndLog(bot, telegram.groupId, message);
     } else if (!oldState.channelId) {
+      const message = `${username} joined ${newChannelName}`;
+
       joined.set(memberId, moment());
 
-      message += `joined ${newChannelName}`;
-    } else {
+      sendMsgAndLog(bot, telegram.groupId, message);
+    } else if (oldChannelName !== newChannelName) {
       const diff = getDiff(joined, memberId);
+      const message = `${username} moved from ${oldChannelName} to ${newChannelName} (${diff})`;
+
       joined.set(memberId, moment());
 
-      message += `moved from ${oldChannelName} to ${newChannelName} (${diff})`;
+      sendMsgAndLog(bot, telegram.groupId, message);
     }
-
-    bot.telegram.sendMessage(telegram.groupId, message);
-
-    console.log(message);
   });
 
   client.login(discord.token);
