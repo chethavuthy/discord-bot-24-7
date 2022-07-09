@@ -1,0 +1,22 @@
+{
+  "name": "discord-bot-247",
+  "version": "1.0.0",
+  "description": "Discord Bot 24/7 - byJth4",
+  "main": "index.js",
+  "author": "Jth4",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "discord.js": "^13.8.1",
+    "dotenv": "^16.0.1",
+    "moment": "^2.29.4",
+    "telegraf": "^4.8.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0",
+    "nodemon": "^2.0.19"
+  }
+}
